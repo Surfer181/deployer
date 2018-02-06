@@ -1,0 +1,20 @@
+# Framework
+Django==1.11.8
+djangorestframework==3.7.7
+django-filter==1.1.0
+djangorestframework-bulk==0.2.1
+
+# 文档
+django-rest-swagger==2.1.2
+Markdown==2.6.11
+
+# Database
+psycopg2==2.7.3.2
+redis==2.10.6
+
+# 运维
+ansible==2.4.2.0
+
+# Utils
+django-cors-headers==2.1.0
+Pillow==5.0.0
