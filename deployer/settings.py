@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django_filters',
 
     'account',
+    'sshkey',
 ]
 
 MIDDLEWARE = [

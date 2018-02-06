@@ -21,4 +21,4 @@ class User(AbstractUser):
     # ssh_key = models.OneToOneField(SSHKey, blank=True, null=True, verbose_name=u'公钥', related_name='user')
 
     def __unicode__(self):
-        return "%s(%s)" % (self.username, self.uuid)
+        return "%s(%s)" % (self.username, self.id)

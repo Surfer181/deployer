@@ -11,14 +11,14 @@ from .models import User
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'is_staff', 'is_active',
+        fields = ('id', 'username', 'email', 'is_staff', 'is_active',
                   'date_joined', 'full_name', 'phone1', 'phone2', 'avatar')
 
 
 class UserIdNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('full_name', 'username')
+        fields = ('id', 'full_name', 'username')
 
 
 class LoginSerializer(serializers.Serializer):

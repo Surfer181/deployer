@@ -17,4 +17,4 @@ celerybeat-schedule.db
 
 */migrations/*
 */*/migrations/*
-/config/base.py
+config/base.py

@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls')),
 
     url(r'^api/v1/account/', include('account.urls', namespace='account')),
+    url(r'^api/v1/sshkey/', include('sshkey.urls', namespace='sshkey')),
 ]
