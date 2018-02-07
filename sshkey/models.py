@@ -5,14 +5,13 @@ import uuid
 
 from django.db import models
 from django.conf import settings as django_settings
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
-from .utils import PublicKeyParseError, pubkey_parse
-from utils.mixins import CreateLastUpdateDatetimeMixin
+from .utils import pubkey_parse
+from .exceptions import PublicKeyTypeError
+from utils.mixins import CreateLastUpdateDatetimeAbstractModel
 
 
-class UserKey(CreateLastUpdateDatetimeMixin, models.Model):
+class UserKey(CreateLastUpdateDatetimeAbstractModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(django_settings.AUTH_USER_MODEL, db_index=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, blank=True)
@@ -22,20 +21,14 @@ class UserKey(CreateLastUpdateDatetimeMixin, models.Model):
     def __unicode__(self):
         return '{}: {}'.format(self.user, self.name)
 
-    def clean_fields(self, exclude=None):
-        if not exclude or 'key' not in exclude:
-            self.key = self.key.strip()
-            if not self.key:
-                raise ValidationError({'key': [_("This field is required.")]})
+    class Meta:
+        unique_together = ('user', 'name')
 
     def clean(self):
         self.key = self.key.strip()
         if not self.key:
             return
-        try:
-            pubkey = pubkey_parse(self.key)
-        except PublicKeyParseError as e:
-            raise ValidationError(str(e))
+        pubkey = pubkey_parse(self.key)
         self.key = pubkey.format_openssh()
         self.fingerprint = pubkey.fingerprint()
         if not self.name:
@@ -49,4 +42,20 @@ class UserKey(CreateLastUpdateDatetimeMixin, models.Model):
             return pubkey.format_rfc4716()
         if f == 'PEM':
             return pubkey.format_pem()
-        raise ValueError(_("Invalid format"))
+        raise PublicKeyTypeError
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super(UserKey, self).save(*args, **kwargs)
+
+
+class UserDefaultSSHkey(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(django_settings.AUTH_USER_MODEL)
+    key = models.ForeignKey(UserKey)
+
+    class Meta:
+        unique_together = ('user', 'key')  # 每人一个默认key
+
+    def __unicode__(self):
+        return self.user.full_name if self.user.full_name else self.user.username

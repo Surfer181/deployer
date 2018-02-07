@@ -15,6 +15,20 @@ from rest_framework.response import Response
 logger = logging.getLogger(__name__)
 
 
+class CreateLastUpdateDatetimeAbstractModel(models.Model):
+    last_update_datetime = models.DateTimeField(verbose_name=u'最后修改时间', blank=True, null=True)
+    create_datetime = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True, blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        """ 可以加参数控制的 auto_now """
+        if not kwargs.pop('skip_auto_now', False):
+            self.last_update_datetime = timezone.now()
+        return super(CreateLastUpdateDatetimeAbstractModel, self).save(*args, **kwargs)
+
+
 class AdminCommonUserCanNotDeleteMixin(object):
 
     def has_delete_permission(self, request, obj=None):
@@ -35,17 +49,6 @@ class AdminCommonUserCanNotAddMixin(object):
         if request.user.is_superuser:
             return True
         return False
-
-
-class CreateLastUpdateDatetimeMixin(object):
-    last_update_datetime = models.DateTimeField(verbose_name=u'最后修改时间')
-    create_datetime = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        """ 可以加参数控制的 auto_now """
-        if not kwargs.pop('skip_auto_now', False):
-            self.last_update_datetime = timezone.now()
-        return super(CreateLastUpdateDatetimeMixin, self).save()
 
 
 class SwappableSerializerMixin(object):

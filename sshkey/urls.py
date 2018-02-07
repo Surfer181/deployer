@@ -7,7 +7,8 @@ from . import views
 
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserKeyViewSet)
+router.register(r'user', views.UserKeyViewSet)
+router.register(r'default', views.UserDefaultSSHkeyViewSet)
 
 urlpatterns = router.urls
 

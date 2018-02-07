@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from . import settings
-
 import base64
 import binascii
 import struct
+
+from .exceptions import PublicKeyParseError
+
+
+SSHKEY_DEFAULT_HASH = 'legacy'
 
 
 def wrap(text, width, wrap_end=None):
@@ -42,14 +45,6 @@ def int2bytes(i):
     return bytearray.fromhex(h)
 
 
-class PublicKeyParseError(Exception):
-    def __init__(self, text):
-        self.text = text
-
-    def __str__(self):
-        return "Unrecognized public key format"
-
-
 class PublicKey(object):
     def __init__(self, b64key, comment=None):
         self.b64key = b64key
@@ -72,7 +67,7 @@ class PublicKey(object):
     def fingerprint(self, hash=None):
         import hashlib
         if hash is None:
-            hash = settings.SSHKEY_DEFAULT_HASH
+            hash = SSHKEY_DEFAULT_HASH
         if hash in ('md5', 'legacy'):
             fp = hashlib.md5(self.keydata).hexdigest()
             fp = ':'.join(a + b for a, b in zip(fp[::2], fp[1::2]))
@@ -124,16 +119,16 @@ class PublicKey(object):
 def pubkey_parse_openssh(text):
     fields = text.split(None, 2)
     if len(fields) < 2:
-        raise PublicKeyParseError(text)
+        raise PublicKeyParseError
     try:
         if len(fields) == 2:
             key = PublicKey(fields[1])
         else:
             key = PublicKey(fields[1], fields[2])
     except TypeError:
-        raise PublicKeyParseError(text)
+        raise PublicKeyParseError
     if fields[0] != key.algorithm:
-        raise PublicKeyParseError(text)
+        raise PublicKeyParseError
     return key
 
 
@@ -143,7 +138,7 @@ def pubkey_parse_rfc4716(text):
                     lines[0] == '---- BEGIN SSH2 PUBLIC KEY ----' and
                     lines[-1] == '---- END SSH2 PUBLIC KEY ----'
     ):
-        raise PublicKeyParseError(text)
+        raise PublicKeyParseError
     lines = lines[1:-1]
     b64key = ''
     headers = {}
@@ -162,7 +157,7 @@ def pubkey_parse_rfc4716(text):
     try:
         return PublicKey(b64key, comment)
     except TypeError:
-        raise PublicKeyParseError(text)
+        raise PublicKeyParseError
 
 
 def pubkey_parse_pem(text):
@@ -172,7 +167,7 @@ def pubkey_parse_pem(text):
                     lines[0] == '-----BEGIN RSA PUBLIC KEY-----' and
                     lines[-1] == '-----END RSA PUBLIC KEY-----'
     ):
-        raise PublicKeyParseError(text)
+        raise PublicKeyParseError
     der = base64.b64decode(''.join(lines[1:-1]).encode('ascii'))
     pkcs1_seq = der_decoder.decode(der)
     n_val = pkcs1_seq[0][0]
@@ -208,4 +203,18 @@ def pubkey_parse(text):
     if lines[0] == '-----BEGIN RSA PUBLIC KEY-----':
         return pubkey_parse_pem(text)
 
-    raise PublicKeyParseError(text)
+    raise PublicKeyParseError
+
+
+def get_user_default_sshkey(user):
+    """
+    返回用户的默认ssh key, 用于ssh
+    :param user: user object
+    :return: key object
+    """
+    from .models import UserDefaultSSHkey
+    default_key_query = UserDefaultSSHkey.objects.filter(user=user)
+    if default_key_query.exists():
+        return default_key_query.first().key
+    else:
+        return None

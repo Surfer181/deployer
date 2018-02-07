@@ -7,7 +7,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from utils.constants import MAX_LENGTH
-from utils import validators, mixins
+from utils import validators
 
 
 class User(AbstractUser):
@@ -18,7 +18,6 @@ class User(AbstractUser):
     phone2 = models.CharField(validators=[validators.PHONE_RE], max_length=MAX_LENGTH['phone'],
                               blank=True, verbose_name=u'手机号2')
     avatar = models.ImageField(upload_to='users/avatar/', blank=True, null=True, verbose_name=u'头像')
-    # ssh_key = models.OneToOneField(SSHKey, blank=True, null=True, verbose_name=u'公钥', related_name='user')
 
     def __unicode__(self):
         return "%s(%s)" % (self.username, self.id)
