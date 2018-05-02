@@ -63,7 +63,7 @@ class AnsibleGroup(CreateLastUpdateDatetimeAbstractModel):
         return self.name
 
 
-class AnsiblePlaybook(CreateLastUpdateDatetimeAbstractModel):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=MAX_LENGTH['name'])
-    source = models.ForeignKey()
+# class AnsiblePlaybook(CreateLastUpdateDatetimeAbstractModel):
+#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     name = models.CharField(max_length=MAX_LENGTH['name'])
+    # source = models.ForeignKey()
