@@ -17,11 +17,14 @@ INSTALLED_APPS = [
 
     'corsheaders',  # 跨域
     'rest_framework',
+    'rest_framework_swagger',
     'rest_framework.authtoken',
     'django_filters',
 
     'account',
     'sshkey',
+    'host',
+    'ansible_django',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +140,9 @@ FILE_UPLOAD_PERMISSIONS = 0644  # 上传文件大于2.5MB后权限默认为0600
 
 # 获取启动服务器的用户
 CURRENT_USER = getpass.getuser()
+
+# 下载下来的代码存放的路径
+REPO_ROOT_DIR = os.path.join(BASE_DIR, MEDIA_ROOT, 'repo')
+# 生成的sshkey保存的路径
+SSHKEY_DIR = os.path.join(BASE_DIR, MEDIA_ROOT, 'sshkey')
+

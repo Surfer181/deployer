@@ -1,0 +1,2 @@
+- oauth 登录
+- 管理用户的sshkey，一键绑定主机,一键清除 ssh key
