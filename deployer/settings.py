@@ -22,9 +22,11 @@ INSTALLED_APPS = [
     'django_filters',
 
     'account',
-    'sshkey',
     'host',
     'ansible_django',
+
+    'addons.sshkey',
+
 ]
 
 MIDDLEWARE = [

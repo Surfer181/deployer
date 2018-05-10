@@ -23,10 +23,10 @@ class SSHKeyPermission(BasePermission):
             return False
 
 
-class UserDefaultSSHKeyPermission(BasePermission):
-
-    def has_object_permission(self, request, view, obj):
-        if request.user == obj.key.user:  # 用户只能修改自己的默认key
-            return True
-        else:
-            return False
+# class UserDefaultSSHKeyPermission(BasePermission):
+#
+#     def has_object_permission(self, request, view, obj):
+#         if request.user == obj.key.user:  # 用户只能修改自己的默认key
+#             return True
+#         else:
+#             return False

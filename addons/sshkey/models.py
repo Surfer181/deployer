@@ -9,6 +9,7 @@ from django.conf import settings as django_settings
 from .utils import pubkey_parse
 from .exceptions import PublicKeyTypeError
 from utils.mixins import CreateLastUpdateDatetimeAbstractModel
+from host.models import Host
 
 
 class UserKey(CreateLastUpdateDatetimeAbstractModel):
@@ -49,13 +50,14 @@ class UserKey(CreateLastUpdateDatetimeAbstractModel):
         return super(UserKey, self).save(*args, **kwargs)
 
 
-class UserDefaultSSHkey(models.Model):
+class AuthorizedKeys(CreateLastUpdateDatetimeAbstractModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(django_settings.AUTH_USER_MODEL)
-    key = models.ForeignKey(UserKey)
-
-    class Meta:
-        unique_together = ('user', 'key')  # 每人一个默认key
+    user_key = models.ForeignKey(UserKey)
+    host = models.ForeignKey(Host)
+    operator = models.ForeignKey(django_settings.AUTH_USER_MODEL)
 
     def __unicode__(self):
-        return self.user.full_name if self.user.full_name else self.user.username
+        return "%s %s" % (self.user_key, self.host)
+
+    def save(self, *args, **kwargs):
+        return super(AuthorizedKeys, self).save(self, *args, **kwargs)

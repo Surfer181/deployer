@@ -15,6 +15,7 @@ redis==2.10.6
 
 # 运维
 ansible==2.5.1
+paramiko==2.4.1
 
 # Utils
 django-cors-headers==2.1.0

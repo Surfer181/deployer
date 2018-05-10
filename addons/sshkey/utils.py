@@ -206,15 +206,15 @@ def pubkey_parse(text):
     raise PublicKeyParseError
 
 
-def get_user_default_sshkey(user):
-    """
-    返回用户的默认ssh key, 用于ssh
-    :param user: user object
-    :return: key object
-    """
-    from .models import UserDefaultSSHkey
-    default_key_query = UserDefaultSSHkey.objects.filter(user=user)
-    if default_key_query.exists():
-        return default_key_query.first().key
-    else:
-        return None
+# def get_user_default_sshkey(user):
+#     """
+#     返回用户的默认ssh key, 用于ssh
+#     :param user: user object
+#     :return: key object
+#     """
+#     from .models import UserDefaultSSHkey
+#     default_key_query = UserDefaultSSHkey.objects.filter(user=user)
+#     if default_key_query.exists():
+#         return default_key_query.first().key
+#     else:
+#         return None

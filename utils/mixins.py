@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class CreateLastUpdateDatetimeAbstractModel(models.Model):
-    last_update_datetime = models.DateTimeField(verbose_name=u'最后修改时间', blank=True, null=True)
-    create_datetime = models.DateTimeField(verbose_name=u'创建时间', auto_now_add=True, blank=True, null=True)
+    last_update_datetime = models.DateTimeField(verbose_name=u'最后修改时间', blank=True, null=True, editable=False)
+    create_datetime = models.DateTimeField(
+        verbose_name=u'创建时间', auto_now_add=True, blank=True, null=True, editable=False
+    )
 
     class Meta:
         abstract = True
